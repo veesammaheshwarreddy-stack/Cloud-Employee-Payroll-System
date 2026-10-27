@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Employee Payroll System</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #eef2f7;
+            padding: 20px
+        }
+        
+        .container {
+            max-width: 750px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px
+        }
+        
+        input,
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 7px 0;
+            box-sizing: border-box
+        }
+        
+        button {
+            background: #12664f;
+            color: white;
+            border: 0;
+            cursor: pointer
+        }
+        
+        .item {
+            padding: 14px;
+            background: #f0f8f5;
+            margin: 10px 0
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Employee Payroll System</h1>
+        <form id="form">
+            <input id="name" placeholder="Employee name" required>
+            <input id="id" placeholder="Employee ID" required>
+            <input id="salary" type="number" min="0" step="0.01" placeholder="Basic monthly salary" required>
+            <input id="allowance" type="number" min="0" step="0.01" placeholder="Allowances" value="0" required>
+            <input id="deduction" type="number" min="0" step="0.01" placeholder="Deductions" value="0" required>
+            <button>Calculate Payroll</button>
+        </form>
+        <h2>Payroll Records</h2>
+        <div id="list"></div>
+    </div>
+    <script>
+        let records = [];
+        document.getElementById('form').onsubmit = function(e) {
+            e.preventDefault();
+            let name = document.getElementById('name').value.trim();
+            let id = document.getElementById('id').value.trim();
+            let basic = Number(document.getElementById('salary').value);
+            let allowance = Number(document.getElementById('allowance').value);
+            let deduction = Number(document.getElementById('deduction').value);
+            if (!name || !id || !Number.isFinite(basic) || !Number.isFinite(allowance) || !Number.isFinite(deduction) || basic < 0 || allowance < 0 || deduction < 0) {
+                alert('Enter valid details');
+                return;
+            }
+            if (records.some(r => r.id === id)) {
+                alert('Employee ID already exists');
+                return;
+            }
+            records.push({
+                name,
+                id,
+                total: basic + allowance - deduction
+            });
+            this.reset();
+            render();
+        };
+
+        function render() {
+            let list = document.getElementById('list');
+            list.replaceChildren();
+            records.forEach(r => {
+                let item = document.createElement('div');
+                item.className = 'item';
+                item.textContent = r.name + ' (' + r.id + ') — Net monthly salary: ₹' + r.total.toFixed(2);
+                list.appendChild(item);
+            });
+            if (!records.length) list.textContent = 'No payroll records.';
+        }
+    </script>
+</body>
+
+</html>
